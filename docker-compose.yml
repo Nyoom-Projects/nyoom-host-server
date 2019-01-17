@@ -1,0 +1,29 @@
+version: '2'
+services:
+    deepstream:
+        image: deepstreamio/deepstream.io
+        ports:
+            - "7520:6020"
+            - "7521:6021"
+        volumes:
+            - ./conf:/etc/deepstream
+        depends_on:
+            - redis
+            - rethinkdb
+
+    deepstream-search-provider:
+        image: deepstreamio/provider-search-rethinkdb
+        environment:
+            - DEEPSTREAM_HOST=deepstream
+            - DEEPSTREAM_PORT=6020
+            - RETHINKDB_HOST=rethinkdb
+        depends_on:
+            - deepstream
+
+    redis:
+        image: redis:alpine
+
+    rethinkdb:
+        image: rethinkdb
+        volumes:
+            - ./rethinkdb_data:/data/rethinkdb_data
